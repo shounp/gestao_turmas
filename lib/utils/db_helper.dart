@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:mysql1/mysql1.dart';
 
 Future<void> verificarConexaoDB() async {
     try {

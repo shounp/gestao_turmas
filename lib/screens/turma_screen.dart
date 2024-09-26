@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'marcar_presenca.dart';  // Importar o arquivo onde está a função adicionarPresenca
 
 class TurmaScreen extends StatelessWidget {
