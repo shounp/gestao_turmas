@@ -1,0 +1,17 @@
+{
+    "name": "db_connection_api",
+    "version": "1.0.0",
+    "description": "API para verificar conexão com o banco de dados MySQL",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "author": "Leonardo Teixeira",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.21.0",
+        "mysql2": "^3.11.3"
+    },
+    "keywords": []
+}
