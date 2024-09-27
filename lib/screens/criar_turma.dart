@@ -100,7 +100,7 @@ class PaginaAdicionarTurma extends StatelessWidget {
                 _adicionarTurma(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff0a6d92),
+                backgroundColor: const Color(0xff0a6d92), // Cor de fundo do botão
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -108,7 +108,7 @@ class PaginaAdicionarTurma extends StatelessWidget {
               ),
               child: const Text(
                 'Adicionar Turma',
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18, color: Colors.white), // Cor branca para o texto
               ),
             ),
           ],

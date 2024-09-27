@@ -1,8 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:turmas/screens/teacher_screen.dart';
-import '../utils/auth.dart';
 import './aluno_screen.dart';
 import './cadastro_screen.dart';
 
@@ -19,52 +18,99 @@ class _TelaLoginState extends State<TelaLogin> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
 
-  Future <void> login() async {
-  final String usuario = _usuarioController.text;
-  final String senha = _senhaController.text;
+  // Função de login que faz uma requisição à API para autenticação
+  Future<void> login() async {
+    final String usuario = _usuarioController.text;
+    final String senha = _senhaController.text;
 
-  final dbHelper = DatabaseHelper();
-  int? usuarioId = await dbHelper.getUserId(usuario, senha, _tipoUsuario);  // Usando o novo método getUserId
-
-  if (usuarioId != null) {
-    if (_tipoUsuario == 'Professor') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PaginaProfessor(usuario: usuario)),  // Passando o nome do usuário
+    try {
+      var url = Uri.parse('http://192.168.1.2:3000/auth/login');  // Substitua pelo IP correto do seu servidor
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'usuario': usuario,
+          'senha': senha,
+          'tipoUsuario': _tipoUsuario,
+        }),
       );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PaginaAluno(usuario: usuario)),  // Passando o nome do usuário
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        // Navegar para a tela correta dependendo do tipo de usuário
+        if (data['tipoUsuario'] == 'Professor') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaginaProfessor(
+                usuario: data['usuario'],
+                senha: senha,
+                tipoUsuario: _tipoUsuario,
+              ),
+            ),
+          );
+        } else if (data['tipoUsuario'] == 'Aluno') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaginaAluno(
+                usuario: data['usuario'],
+                senha: senha,
+                tipoUsuario: _tipoUsuario,
+              ),
+            ),
+          );
+        }
+      } else if (response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(16),
+              height: 90,
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              child: const Text("Usuário ou senha incorretos"),
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        );
+      } else {
+        throw Exception('Erro ao autenticar: ${response.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(16),
+            height: 90,
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            child: Text("Erro de conexão: $e"),
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(16),
-          height: 90,
-          decoration: const BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          child: const Text("Usuário e senha não encontrados"),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-    );
   }
-}
 
-
-
+  // Função de navegação para a tela de cadastro
   void _realizarCadastro() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) =>  const PaginaCadastro()),
+      MaterialPageRoute(builder: (context) => const PaginaCadastro()),
     );
   }
 
@@ -91,8 +137,7 @@ class _TelaLoginState extends State<TelaLogin> {
                 },
                 focusColor: Colors.transparent,
                 underline: Container(),
-                items: <String>['Professor', 'Aluno']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>['Professor', 'Aluno'].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -119,26 +164,27 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
             ),
             const SizedBox(height: 40),
-                ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(500),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 31, 15, 97),
-                  
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(500),
                 ),
-                onPressed: login,
-                child: const Text('Login'),
-              
-                  
-                ),
-              
-          
+                backgroundColor: const Color.fromARGB(255, 135, 206, 250), // Azul claro
+              ),
+              onPressed: login,
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.white), // Texto branco
+              ),
+            ),
             const SizedBox(height: 16.0),
             TextButton(
               onPressed: _realizarCadastro,
-              child: const Text('Cadastrar', style: TextStyle(color: Color.fromARGB(255, 31, 15, 97)),),
+              child: const Text(
+                'Cadastrar',
+                style: TextStyle(color: Color.fromARGB(255, 135, 206, 250)), // Azul claro para o texto
+              ),
             ),
           ],
         ),

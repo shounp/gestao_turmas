@@ -36,7 +36,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
                 Navigator.pushNamed(context, '/login');  // Navegando para a página de login
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 249, 250, 250),
+                backgroundColor: const Color.fromARGB(255, 135, 206, 250), // Azul claro
                 padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(160),
@@ -45,11 +45,11 @@ class _PaginaInicialState extends State<PaginaInicial> {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.login, color: Color.fromARGB(255, 31, 15, 97)),
+                  Icon(Icons.login, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
                     'Entrar',
-                    style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 31, 15, 97)),
+                    style: TextStyle(fontSize: 18, color: Colors.white), // Texto branco
                   ),
                 ],
               ),

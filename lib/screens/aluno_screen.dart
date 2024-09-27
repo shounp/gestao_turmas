@@ -3,10 +3,11 @@ import 'adicionar_turma.dart';
 import './turmas_aluno.dart';
 
 class PaginaAluno extends StatelessWidget {
-  
   final String usuario;
+  final String senha;        // Adicionei o campo senha
+  final String tipoUsuario;  // Adicionei o campo tipoUsuario
 
-  const PaginaAluno({super.key, required this.usuario});
+  const PaginaAluno({super.key, required this.usuario,required this.senha,required this.tipoUsuario});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,13 @@ class PaginaAluno extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AcessarTurmasAluno(usuario: usuario)),
+                  MaterialPageRoute(
+                    builder: (context) => AcessarTurmasAluno(
+                      usuario: usuario,
+                      senha: senha,              // Passando a senha para a próxima página
+                      tipoUsuario: tipoUsuario,  // Passando o tipoUsuario para a próxima página
+                    ),
+                  ),
                 );
               },
               style: ButtonStyle(
